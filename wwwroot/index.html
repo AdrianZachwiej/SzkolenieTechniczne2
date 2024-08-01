@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Reservation System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Rezerwacja Stolika</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Zrób rezerwację</h2>
+            <form id="reservationForm">
+                <label for="firstName">Imię:</label>
+                <input type="text" id="firstName" required>
+
+                <label for="lastName">Nazwisko:</label>
+                <input type="text" id="lastName" required>
+
+                <label for="phoneNumber">Numer telefonu:</label>
+                <input type="tel" id="phoneNumber" required>
+
+                <label for="tableId">Numer stolika:</label>
+                <select id="tableId" required>
+                    <option value="" disabled selected>Wybierz stół</option>
+                </select>
+
+                <label for="date">Data:</label>
+                <input type="datetime-local" id="date" required>
+
+                <button type="submit">Rezerwuj</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Dostępne stoliki</h2>
+            <form id="availabilityForm">
+                <label for="availabilityDate">Data:</label>
+                <input type="datetime-local" id="availabilityDate" required>
+
+                <button type="submit">Sprawdź dostępne stoliki</button>
+            </form>
+
+            <ul id="availableTablesList"></ul>
+        </section>
+
+      
+        <section>
+            <a href="/admin/reservations" class="btn btn-primary">Edytuj rezerwacje</a>
+        </section>
+    </main>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html>

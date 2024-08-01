@@ -1,0 +1,143 @@
+﻿@model IEnumerable<ProjektAdrianZachwiej56233.Models.Reservation>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edycja rezerwacji</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        .actions a {
+            margin-right: 10px;
+        }
+
+        .btn {
+            display: block;
+            width: max-content;
+            padding: 10px 20px;
+            margin: 20px auto;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rezerwacje</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Numer rezerwacji</th>
+                <th>ID Użytkownika</th>
+                <th>Numer stolika</th>
+                <th>Data</th>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Telefon</th>
+                <th>Akcja</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in Model)
+            {
+                <tr>
+                    <td>@reservation.Id</td>
+                    <td>@reservation.UserId</td>
+                    <td>@reservation.TableId</td>
+                    <td>@reservation.Date.ToString("M/d/yyyy h:mm tt")</td>
+                    <td>@reservation.FirstName</td>
+                    <td>@reservation.LastName</td>
+                    <td>@reservation.PhoneNumber</td>
+                    <td>
+                        <a href="/admin/reservations/edit/@reservation.Id">Edytuj</a> |
+                        <a href="javascript:void(0);" onclick="deleteReservation(@reservation.Id)">Usuń</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a href="/" class="btn">Powrót do strony głównej</a>
+
+    <script>
+        async function deleteReservation(id) {
+            if (!confirm('Czy na pewno chcesz usunąć tę rezerwację?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/reservation/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Rezerwacja usunięta');
+                    window.location.reload();
+                } else {
+                    alert('Nie udało się usunąć rezerwacji');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Wystąpił błąd podczas usuwania rezerwacji');
+            }
+        }
+    </script>
+</body>
+</html>

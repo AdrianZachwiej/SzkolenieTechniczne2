@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edytuj Rezerwację</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .btn {
+            display: block;
+            width: max-content;
+            padding: 10px 20px;
+            margin: 20px auto;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edytuj Rezerwację</h1>
+        <form id="editReservationForm">
+            <label for="firstName">Imię:</label>
+            <input type="text" id="firstName" required>
+
+            <label for="lastName">Nazwisko:</label>
+            <input type="text" id="lastName" required>
+
+            <label for="phoneNumber">Numer telefonu:</label>
+            <input type="tel" id="phoneNumber" required>
+
+            <label for="tableId">Numer stolika:</label>
+            <select id="tableId" required>
+                <!-- Options will be populated via JavaScript -->
+            </select>
+
+            <label for="date">Data:</label>
+            <input type="datetime-local" id="date" required>
+
+            <button type="submit">Zapisz zmiany</button>
+        </form>
+        <a href="/admin/reservations" class="btn">Powrót do listy rezerwacji</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch reservation data and populate form fields
+            const reservationId = window.location.pathname.split('/').pop();
+            const response = await fetch(`/api/reservation/${reservationId}`);
+            const reservation = await response.json();
+
+            document.getElementById('firstName').value = reservation.firstName;
+            document.getElementById('lastName').value = reservation.lastName;
+            document.getElementById('phoneNumber').value = reservation.phoneNumber;
+            document.getElementById('tableId').value = reservation.tableId;
+            document.getElementById('date').value = new Date(reservation.date).toISOString().slice(0, 16);
+
+            // Populate table options
+            const tablesResponse = await fetch(`/api/reservation/available-tables?date=${new Date().toISOString().slice(0, 10)}`);
+            const tables = await tablesResponse.json();
+
+            const tableSelect = document.getElementById('tableId');
+            tables.forEach(table => {
+                const option = document.createElement('option');
+                option.value = table.id;
+                option.textContent = `Table ${table.number} (Seats: ${table.seats})`;
+                if (table.id === reservation.tableId) {
+                    option.selected = true;
+                }
+                tableSelect.appendChild(option);
+            });
+
+            // Handle form submission
+            document.getElementById('editReservationForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const updatedReservation = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    phoneNumber: document.getElementById('phoneNumber').value,
+                    tableId: document.getElementById('tableId').value,
+                    date: document.getElementById('date').value
+                };
+
+                try {
+                    const response = await fetch(`/api/reservation/${reservationId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedReservation)
+                    });
+
+                    if (response.ok) {
+                        alert('Rezerwacja zaktualizowana');
+                        window.location.href = '/admin/reservations';
+                    } else {
+                        alert('Nie udało się zaktualizować rezerwacji');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Wystąpił błąd podczas aktualizowania rezerwacji');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
